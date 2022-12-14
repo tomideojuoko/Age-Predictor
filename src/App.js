@@ -1,44 +1,30 @@
 import './App.css';
-import { useState } from 'react';
-import { Task } from "./Task";
+import Axios from "axios";
+import { useEffect, useState } from 'react';
 
 function App() {
-  const [todoList, setTodoList] = useState([]);
-  const [newTask, setNewTask] = useState("");
-
-  const handleChange = (event) => {
-    setNewTask(event.target.value);
-  };
-
-  const addTask = () => {
-    const task = {
-      id: todoList.length === 0 ? 1 : todoList[todoList.length - 1].id + 1,
-      taskName: newTask
-    }
-    setTodoList([...todoList, task])
-  };
-
-  const deleteTask = (id) => {
-    setTodoList(todoList.filter((task) => task.id !== id));
-  };
+  const [name, setName] = useState("");
+  const [predictedAge, setPredictedAge] = useState(null);
+  const fetchData = () => {
+    Axios.get(`https://api.agify.io/?name=${name}`).then((res) => {
+      setPredictedAge(res.data);
+    })
+  }
 
   return (
   <div className='App'>
-    <div className='addTask'>
-      <input onChange={handleChange}/>
-      <button onClick={addTask}> Add Task </button>
-    </div>
-    <div className='list'>
-      {todoList.map((task) => {
-        return (
-          <Task 
-            taskName={task.taskName} 
-            id={task.id} 
-            deleteTask={deleteTask} 
-          />
-        );
-      })}
-    </div>
+    <input placeholder='Ex. Tomide...' 
+    onChange={(event) => {
+      setName(event.target.value);
+      }}
+    />
+    <button onClick={fetchData}>
+      Predict Age
+    </button>
+
+    <h1> Name: {predictedAge?.name} </h1>
+    <h1> Predicted Age: {predictedAge?.age} </h1>
+    <h1> Count: {predictedAge?.count} </h1>
   </div>
   );
 }
